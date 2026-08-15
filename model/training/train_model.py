@@ -169,7 +169,7 @@ def train_model():
     # 7. Save Model
     model_dir = r"C:\Users\user\Documents\Sentinel-RT\model\training"
     os.makedirs(model_dir, exist_ok=True)
-    model_path = os.path.join(model_dir, "sentinel_model.h5")
+    model_path = os.path.join(model_dir, "sentinel_model.keras")
     model.save(model_path)
     print(f"Saved trained model to {model_path}")
 

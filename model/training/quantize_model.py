@@ -19,7 +19,7 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 
 def quantize_model():
-    model_path = r"C:\Users\user\Documents\Sentinel-RT\model\training\sentinel_model.h5"
+    model_path = r"C:\Users\user\Documents\Sentinel-RT\model\training\sentinel_model.keras"
     dataset_path = r"C:\Users\user\Documents\Sentinel-RT\model\dataset\task_scenarios.csv"
     
     if not os.path.exists(model_path):
