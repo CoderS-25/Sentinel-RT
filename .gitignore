@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+env/
+.venv/
+
+# TensorFlow / Model artifacts (keep .tflite, ignore large training checkpoints)
+*.ckpt*
+*.pb
+checkpoint
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# STM32CubeIDE
+Debug/
+Release/
+.settings/
+.cproject
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build output
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
