@@ -1,53 +1,25 @@
-/**
- * @file task_profiler.h
- * @brief Task Profiler component (Eyes) of Sentinel-RT
- * 
- * Monitors all running tasks and builds a feature vector.
- */
-#ifndef SENTINEL_TASK_PROFILER_H
-#define SENTINEL_TASK_PROFILER_H
+#ifndef TASK_PROFILER_H
+#define TASK_PROFILER_H
 
-#include <stdint.h>
-/* Placeholder for uT-Kernel definitions */
 #include <tk/tkernel.h>
 
-#define MAX_TASKS 5
-#define FEATURE_COUNT 26
 #define PROFILER_INTERVAL_MS 5
 #define PROFILER_PRIORITY 7
-#define PROFILER_STACK_SIZE 512
+#define TASK_COUNT 5
 
 /**
- * @struct SentinelFeatureVector
- * @brief Holds feature extraction data for the AI inference engine
+ * @brief Initialize the task profiler.
+ * 
+ * @param flg_id The event flag ID used to signal the inference engine.
+ * @return ER E_OK on success, error code otherwise.
  */
-typedef struct {
-    struct {
-        float cpu_load;
-        float wait_time_ms;
-        float deadline_proximity;
-        float context_switch_rate;
-        float is_blocked;
-    } tasks[MAX_TASKS];
-    float total_system_cpu_load;
-} SentinelFeatureVector;
+ER sentinel_profiler_init(ID flg_id);
 
 /**
- * @brief Initializes the profiler as a uT-Kernel task
+ * @brief Get the latest feature vector.
+ * 
+ * @param vector Pointer to a float array of size 26.
  */
-void sentinel_profiler_init(void);
+void sentinel_profiler_get_features(float* vector);
 
-/**
- * @brief Fills the feature vector
- * @param out Pointer to the feature vector to populate
- */
-void sentinel_profiler_get_features(SentinelFeatureVector *out);
-
-/**
- * @brief uT-Kernel task entry function
- * @param stacd Task start code
- * @param exinf Extended information
- */
-void sentinel_profiler_task_entry(INT stacd, void *exinf);
-
-#endif /* SENTINEL_TASK_PROFILER_H */
+#endif // TASK_PROFILER_H

@@ -1,0 +1,5 @@
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastmlock.c:77:11:MLockTmo	3
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastmlock.c:104:11:MLock	1
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastmlock.c:113:11:MUnlock	2
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastmlock.c:127:11:CreateMLock	2
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastmlock.c:151:11:DeleteMLock	3

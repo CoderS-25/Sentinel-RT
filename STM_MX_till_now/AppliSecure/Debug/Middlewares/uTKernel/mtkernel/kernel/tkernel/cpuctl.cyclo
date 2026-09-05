@@ -1,0 +1,6 @@
+../Middlewares/uTKernel/mtkernel/kernel/tkernel/cpuctl.c:29:12:tk_dis_dsp	4
+../Middlewares/uTKernel/mtkernel/kernel/tkernel/cpuctl.c:45:12:tk_ena_dsp	5
+../Middlewares/uTKernel/mtkernel/kernel/tkernel/cpuctl.c:64:12:tk_set_reg	9
+../Middlewares/uTKernel/mtkernel/kernel/tkernel/cpuctl.c:93:12:tk_get_reg	9
+../Middlewares/uTKernel/mtkernel/kernel/tkernel/cpuctl.c:124:12:tk_set_cpr	11
+../Middlewares/uTKernel/mtkernel/kernel/tkernel/cpuctl.c:156:12:tk_get_cpr	11

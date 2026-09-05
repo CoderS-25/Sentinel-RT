@@ -1,43 +1,49 @@
-# Python
+# ============================================================
+# Sentinel-RT .gitignore
+# ============================================================
+
+# STM32CubeIDE build outputs (large binary artifacts)
+STM_MX_till_now/**/Debug/**/*.o
+STM_MX_till_now/**/Debug/**/*.d
+STM_MX_till_now/**/Debug/**/*.su
+STM_MX_till_now/**/Debug/**/*.list
+STM_MX_till_now/**/Debug/**/*.map
+STM_MX_till_now/**/Debug/**/*.bin
+STM_MX_till_now/**/Debug/**/*.elf
+
+# Keep the compiled .elf and .bin for flashing reference
+!STM_MX_till_now/FSBL/Debug/STM_MX_till_now_FSBL.elf
+!STM_MX_till_now/FSBL/Debug/STM_MX_till_now_FSBL.bin
+!STM_MX_till_now/AppliSecure/Debug/STM_MX_till_now_AppliSecure.elf
+!STM_MX_till_now/AppliNonSecure/Debug/STM_MX_till_now_AppliNonSecure.elf
+
+# Python artifacts
 __pycache__/
 *.py[cod]
-*.egg-info/
-dist/
-build/
-.eggs/
-*.egg
+*.pyo
+.env
 venv/
-env/
 .venv/
 
-# TensorFlow / Model artifacts (keep .tflite, ignore large training checkpoints)
-*.ckpt*
-*.pb
-checkpoint
-logs/
+# Keras / TF cache
+*.h5
+model/training/sentinel_model.keras
+model/training/__pycache__/
 
-# IDE
+# Keep the quantized TFLite model (small, deployable)
+!model/quantized/sentinel_model.tflite
+
+# Dataset (large CSV — can be regenerated)
+model/dataset/task_scenarios.csv
+
+# VS Code
 .vscode/
-.idea/
-*.swp
-*.swo
 
-# STM32CubeIDE
-Debug/
-Release/
-.settings/
-.cproject
-.project
-
-# OS
-.DS_Store
+# Windows
 Thumbs.db
-desktop.ini
+Desktop.ini
+*.lnk
 
-# Build output
-*.o
-*.elf
-*.bin
-*.hex
-*.map
-*.lst
+# Temp files
+*.tmp
+*.log

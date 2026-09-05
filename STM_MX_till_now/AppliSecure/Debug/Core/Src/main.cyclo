@@ -1,0 +1,4 @@
+../Core/Src/main.c:72:5:main	2
+../Core/Src/main.c:193:6:usermain	1
+../Core/Src/main.c:203:5:__io_putchar	1
+../Core/Src/main.c:221:6:Error_Handler	1

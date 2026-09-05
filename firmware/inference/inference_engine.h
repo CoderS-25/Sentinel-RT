@@ -1,47 +1,28 @@
-/**
- * @file inference_engine.h
- * @brief NN Inference Engine component (Brain) of Sentinel-RT
- * 
- * Runs a neural network on the Neural-ART NPU.
- */
-#ifndef SENTINEL_INFERENCE_ENGINE_H
-#define SENTINEL_INFERENCE_ENGINE_H
+#ifndef INFERENCE_ENGINE_H
+#define INFERENCE_ENGINE_H
 
-#include <stdint.h>
-/* Placeholder for uT-Kernel definitions */
 #include <tk/tkernel.h>
-#include "../profiler/task_profiler.h"
 
 #define INFERENCE_PRIORITY 6
-#define INFERENCE_STACK_SIZE 2048
 
-/**
- * @struct SentinelDecision
- * @brief Holds the output decision from the NPU inference
- */
 typedef struct {
-    int8_t task_priorities[MAX_TASKS];
-    uint8_t power_state; /* 0=Active, 1=LightSleep, 2=DeepSleep */
-    float confidence;
+    float task_priorities[5];
+    float power_state[3];
 } SentinelDecision;
 
 /**
- * @brief Initializes the inference engine and loads the model on NPU
+ * @brief Initialize the inference engine.
+ * 
+ * @param flg_id The event flag ID used to synchronize with the profiler and decision engine.
+ * @return ER E_OK on success, error code otherwise.
  */
-void sentinel_inference_init(void);
+ER sentinel_inference_init(ID flg_id);
 
 /**
- * @brief Runs inference
- * @param input Feature vector input
- * @param output Decision vector output
+ * @brief Get the latest decision output from the inference engine.
+ * 
+ * @param decision Pointer to store the decision.
  */
-void sentinel_inference_run(const SentinelFeatureVector *input, SentinelDecision *output);
+void sentinel_inference_get_decision(SentinelDecision* decision);
 
-/**
- * @brief uT-Kernel task entry function
- * @param stacd Task start code
- * @param exinf Extended information
- */
-void sentinel_inference_task_entry(INT stacd, void *exinf);
-
-#endif /* SENTINEL_INFERENCE_ENGINE_H */
+#endif // INFERENCE_ENGINE_H

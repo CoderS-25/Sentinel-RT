@@ -1,0 +1,4 @@
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastlock.c:54:13:Lock	2
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastlock.c:64:13:Unlock	2
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastlock.c:74:11:CreateLock	2
+../Middlewares/uTKernel/mtkernel/lib/libtk/fastlock.c:99:13:DeleteLock	2

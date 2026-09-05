@@ -1,73 +1,88 @@
-/**
- * @file decision_engine.c
- * @brief Implementation of the Decision Engine component (Hands)
- */
 #include "decision_engine.h"
-#include <stdio.h>
+#include "../inference/inference_engine.h"
 
-extern ID sentinel_event_flg;
-extern SentinelDecision current_decision;
-ID monitored_tasks[MAX_TASKS] = {0};
+// TODO: Include actual hardware headers for power modes
+// #include "stm32n6xx_hal.h"
 
 /**
- * @brief Initializes the decision engine
+ * @brief Enter Light Sleep Mode (TODO: hardware stub)
  */
-void sentinel_decision_init(void) {
-    T_CTSK ctsk = {0};
-    ctsk.tskatr = TA_HLNG | TA_RNG0;
-    ctsk.task = sentinel_decision_task_entry;
-    ctsk.itskpri = DECISION_PRIORITY;
-    ctsk.stksz = DECISION_STACK_SIZE;
-
-    ID tskid = tk_cre_tsk(&ctsk);
-    if (tskid > 0) {
-        tk_sta_tsk(tskid, 0);
-    }
+static void enter_light_sleep(void) {
+    // TODO: HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
 }
 
 /**
- * @brief uT-Kernel task entry function
+ * @brief Enter Deep Sleep Mode (TODO: hardware stub)
  */
-void sentinel_decision_task_entry(INT stacd, void *exinf) {
-    (void)stacd;
-    (void)exinf;
+static void enter_deep_sleep(void) {
+    // TODO: HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+}
+
+/**
+ * @brief The decision engine task entry point.
+ * 
+ * @param stacd Task start code.
+ * @param exinf Extended information.
+ */
+static void decision_task(INT stacd, void *exinf) {
     UINT flgptn;
-
+    SentinelDecision decision;
+    
     while (1) {
-        /* Wait on event flag from inference engine */
-        tk_wai_flg(sentinel_event_flg, 0x02, TWF_ANDW | TWF_CLR, &flgptn, TMO_FEVR);
+        // Wait for inference engine signal (bit 0x02)
+        tk_wai_flg(sync_flg_id, 0x02, TW_CLR | TW_AND, &flgptn, TMO_FEVR);
 
-        /* Apply decisions */
-        sentinel_decision_apply(&current_decision);
+        // Get latest decision
+        sentinel_inference_get_decision(&decision);
+        
+        // Apply task priorities (assuming task IDs 1 to 5 for the 5 tasks)
+        for (int i = 0; i < 5; i++) {
+            // Priority is expected to be a valid tkernel priority (e.g., 1 to 140)
+            // Scale or map the float output to actual priority
+            PRI pri = (PRI)decision.task_priorities[i];
+            if (pri > 0) {
+                // TODO: Call tk_chg_pri for the specific task ID
+                // tk_chg_pri(task_id_array[i], pri);
+            }
+        }
+        
+        // Determine power state from softmax
+        int best_pwr = 0;
+        float max_p = decision.power_state[0];
+        for (int i = 1; i < 3; i++) {
+            if (decision.power_state[i] > max_p) {
+                max_p = decision.power_state[i];
+                best_pwr = i;
+            }
+        }
+        
+        // Apply power state
+        if (best_pwr == 1) {
+            enter_light_sleep();
+        } else if (best_pwr == 2) {
+            enter_deep_sleep();
+        }
+        // Active state (0) requires no action
     }
+    tk_ext_tsk();
 }
 
+static ID sync_flg_id;
+
 /**
- * @brief Applies the decision from the inference engine
+ * @brief Initialize the decision engine.
+ * 
+ * @param flg_id The event flag ID used to synchronize components.
+ * @return ER E_OK on success, error code otherwise.
  */
-void sentinel_decision_apply(const SentinelDecision *decision) {
-    if (!decision) return;
-
-    for (int i = 0; i < MAX_TASKS; ++i) {
-        if (monitored_tasks[i] != 0 && decision->task_priorities[i] > 0) {
-            tk_chg_pri(monitored_tasks[i], decision->task_priorities[i]);
-            printf("[Sentinel-RT] Task %d: priority -> %d\n", monitored_tasks[i], decision->task_priorities[i]);
-        }
-    }
-
-    switch (decision->power_state) {
-        case 0:
-            /* Stay in Run mode (do nothing) */
-            break;
-        case 1:
-            /* TODO: Hardware-specific */
-            /* Call HAL_PWR_EnterSLEEPMode() equivalent */
-            break;
-        case 2:
-            /* TODO: Hardware-specific */
-            /* Call HAL_PWR_EnterSTOPMode() equivalent */
-            break;
-        default:
-            break;
-    }
+ER sentinel_decision_init(ID flg_id) {
+    sync_flg_id = flg_id;
+    T_CTSK ctsk = {0};
+    ctsk.tskatr = TA_HLNG | TA_RNG3;
+    ctsk.task = decision_task;
+    ctsk.itskpri = DECISION_PRIORITY;
+    ctsk.stksz = 1024;
+    ID tsk_id = tk_cre_tsk(&ctsk);
+    if (tsk_id < E_OK) return tsk_id;
+    return tk_sta_tsk(tsk_id, 0);
 }

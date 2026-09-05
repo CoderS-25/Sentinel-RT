@@ -1,44 +1,46 @@
-/**
- * @file sentinel_rt.c
- * @brief Master initialization for Sentinel-RT
- */
 #include "sentinel_rt.h"
-#include <stdio.h>
+#include "profiler/task_profiler.h"
+#include "inference/inference_engine.h"
+#include "decision/decision_engine.h"
 
-ID sentinel_event_flg = 0;
-SentinelFeatureVector current_features;
-SentinelDecision current_decision;
+// TODO: Include actual hardware headers for UART
+// #include "stm32n6xx_hal.h"
 
 /**
- * @brief Master init that starts all 3 components
+ * @brief Stub for HAL_UART_Transmit (TODO: hardware stub)
  */
-void sentinel_rt_init(void) {
-    /* Initialize shared resources */
-    T_CFLG cflg = {0};
-    cflg.flgatr = TA_TFIFO | TA_WMUL;
-    cflg.iflgptn = 0;
-    sentinel_event_flg = tk_cre_flg(&cflg);
-
-    /* Start components in order */
-    sentinel_profiler_init();
-    sentinel_inference_init();
-    sentinel_decision_init();
-
-    printf("[Sentinel-RT v%d.%d.%d] AI-DRS Middleware Initialized\n",
-           SENTINEL_RT_VERSION_MAJOR,
-           SENTINEL_RT_VERSION_MINOR,
-           SENTINEL_RT_VERSION_PATCH);
+static void uart_transmit(const char* msg) {
+    // TODO: HAL_UART_Transmit(...)
 }
 
 /**
- * @brief Registers an application task for monitoring
+ * @brief Top-level orchestrator initialization for Sentinel-RT.
+ * @return ER E_OK on success, error code otherwise.
  */
-void sentinel_rt_register_task(ID task_id, const char *name) {
-    (void)name; /* Name unused for now, kept for API compatibility */
-    for (int i = 0; i < MAX_TASKS; ++i) {
-        if (monitored_tasks[i] == 0) {
-            monitored_tasks[i] = task_id;
-            break;
-        }
+ER sentinel_rt_init(void) {
+    // 1. Create an event flag for inter-component signaling
+    T_CFLG cflg = {0};
+    cflg.flgatr = TA_TFIFO | TA_WMUL;
+    cflg.iflgptn = 0;
+    ID flg_id = tk_cre_flg(&cflg);
+    if (flg_id < E_OK) {
+        return flg_id;
     }
+
+    // 2. Initialize the Task Profiler
+    ER err = sentinel_profiler_init(flg_id);
+    if (err < E_OK) return err;
+
+    // 3. Initialize the Inference Engine
+    err = sentinel_inference_init(flg_id);
+    if (err < E_OK) return err;
+
+    // 4. Initialize the Decision Engine
+    err = sentinel_decision_init(flg_id);
+    if (err < E_OK) return err;
+
+    // 5. Print initialization message
+    uart_transmit("[Sentinel-RT] All systems GO!\r\n");
+
+    return E_OK;
 }

@@ -1,0 +1,2 @@
+../Sentinel/sentinel_rt.c:15:6:sentinel_rt_init	1
+../Sentinel/sentinel_rt.c:36:6:sentinel_rt_register_task	3
