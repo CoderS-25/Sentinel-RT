@@ -3,7 +3,7 @@
  * @brief Master initialization for Sentinel-RT
  */
 #include "sentinel_rt.h"
-#include <stdio.h>
+#include "usart.h"
 
 ID sentinel_event_flg = 0;
 SentinelFeatureVector current_features;
@@ -24,10 +24,10 @@ void sentinel_rt_init(void) {
     sentinel_inference_init();
     sentinel_decision_init();
 
-    printf("[Sentinel-RT v%d.%d.%d] AI-DRS Middleware Initialized\n",
-           SENTINEL_RT_VERSION_MAJOR,
-           SENTINEL_RT_VERSION_MINOR,
-           SENTINEL_RT_VERSION_PATCH);
+    /* Safe UART print — no heap allocation, no printf */
+    extern UART_HandleTypeDef huart3;
+    HAL_UART_Transmit(&huart3,
+        (uint8_t*)"[Sentinel-RT v0.1.0] AI-DRS Ready\r\n", 37, 200);
 }
 
 /**

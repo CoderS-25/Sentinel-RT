@@ -69,7 +69,7 @@ void sentinel_inference_task_entry(INT stacd, void *exinf) {
     (void)stacd; (void)exinf;
     UINT flgptn;
     while (1) {
-        tk_wai_flg(sentinel_event_flg, 0x01, TWF_ANDW | TWF_CLR, &flgptn, TMO_FEVR);
+        tk_wai_flg(sentinel_event_flg, 0x01, TWF_ANDW | TWF_BITCLR, &flgptn, TMO_FEVR);
         sentinel_inference_run(&current_features, &current_decision);
         tk_set_flg(sentinel_event_flg, 0x02);
     }
@@ -84,69 +84,35 @@ void sentinel_inference_run(const SentinelFeatureVector *input,
     if (!input || !output) return;
 
     /* Build normalised 26-element input vector */
-    float norm_features[FEATURE_COUNT];
+    float local_features[26];
     int idx = 0;
     for (int t = 0; t < MAX_TASKS; t++) {
-        norm_features[idx++] = input->tasks[t].cpu_load;
-        norm_features[idx++] = input->tasks[t].wait_time_ms / 50.0f;
-        norm_features[idx++] = input->tasks[t].deadline_proximity;
-        norm_features[idx++] = input->tasks[t].context_switch_rate / 100.0f;
-        norm_features[idx++] = input->tasks[t].is_blocked;
+        local_features[idx++] = input->tasks[t].cpu_load;
+        local_features[idx++] = input->tasks[t].wait_time_ms;
+        local_features[idx++] = input->tasks[t].deadline_proximity;
+        local_features[idx++] = input->tasks[t].context_switch_rate;
+        local_features[idx++] = input->tasks[t].is_blocked;
     }
-    norm_features[idx] = input->total_system_cpu_load;
+    local_features[idx] = input->total_system_cpu_load;
 
-    /* Get input buffer pointer allocated by compiler */
-    const LL_Buffer_InfoTypeDef *in_bufs = LL_ATON_Input_Buffers_Info(&NN_Instance_Default);
-    int8_t* in_data_i8 = (int8_t*)LL_Buffer_addr_start(&in_bufs[0]);
+    /* TODO: Call Neural-ART NPU via ATON API here */
 
-    /* Quantize input: QLinear(0.003921569, -128, int8) */
-    float scale_in = 0.003921569f;
-    int32_t zp_in = -128;
-    for (int i = 0; i < FEATURE_COUNT; i++) {
-        int32_t q = (int32_t)(norm_features[i] / scale_in) + zp_in;
-        if (q < -128) q = -128;
-        if (q > 127) q = 127;
-        in_data_i8[i] = (int8_t)q;
-    }
-
-    /* Execute on Neural-ART NPU (Async loop) */
-    LL_ATON_RT_RetValues_t res;
-    do {
-        res = LL_ATON_RT_RunEpochBlock(&NN_Instance_Default);
-        if (res == LL_ATON_RT_WFE) {
-            /* Yield CPU while NPU computes */
-            tk_dly_tsk(1); 
-        }
-    } while (res != LL_ATON_RT_DONE);
-
-    /* Get output buffers */
-    const LL_Buffer_InfoTypeDef *out_bufs = LL_ATON_Output_Buffers_Info(&NN_Instance_Default);
-    int8_t* out0 = (int8_t*)LL_Buffer_addr_start(&out_bufs[0]);
-    int8_t* out1 = (int8_t*)LL_Buffer_addr_start(&out_bufs[1]);
-
-    /* Match outputs by size (3 bytes = power, 5 bytes = priorities) */
-    int8_t* power_raw    = (LL_Buffer_len(&out_bufs[0]) == 3) ? out0 : out1;
-    int8_t* priority_raw = (LL_Buffer_len(&out_bufs[0]) == 5) ? out0 : out1;
-
-    /* Decode priority output: map INT8 [-128,127] → TRON priority [1,7] */
+    /* RULE-BASED FALLBACK */
     for (int t = 0; t < MAX_TASKS; t++) {
-        int raw = (int)priority_raw[t] + 128;   /* → [0,255] */
-        int pri = (raw * 6 / 255) + 1;          /* → [1,7]   */
-        if (pri < 1) pri = 1;
-        if (pri > 7) pri = 7;
-        output->task_priorities[t] = (int8_t)pri;
+        if (input->tasks[t].deadline_proximity > 0.7f) {
+            output->task_priorities[t] = 1;
+        } else if (input->tasks[t].cpu_load > 70.0f) {
+            output->task_priorities[t] = 2;
+        } else {
+            output->task_priorities[t] = 4;
+        }
     }
 
-    /* Decode power state: argmax of 3-class logits */
-    output->power_state = (uint8_t)argmax_i8(power_raw, 3);
-    output->confidence  = (float)(power_raw[output->power_state] + 128) / 255.0f * 100.0f;
-
-    printf("[Sentinel-RT][AI] P=[%d,%d,%d,%d,%d] Pwr=%d Conf=%.0f%%\n",
-           output->task_priorities[0], output->task_priorities[1],
-           output->task_priorities[2], output->task_priorities[3],
-           output->task_priorities[4], output->power_state, output->confidence);
-
-    /* Reset network for next run */
-    LL_ATON_RT_Reset_Network(&NN_Instance_Default);
+    if (input->total_system_cpu_load < 20.0f) {
+        output->power_state = 2;
+    } else if (input->total_system_cpu_load < 50.0f) {
+        output->power_state = 1;
+    } else {
+        output->power_state = 0;
+    }
 }
-

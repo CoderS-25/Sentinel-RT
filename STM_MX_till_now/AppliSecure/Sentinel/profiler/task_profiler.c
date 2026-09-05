@@ -52,14 +52,8 @@ void sentinel_profiler_task_entry(INT stacd, void *exinf) {
     (void)exinf;
 
     while (1) {
-        /* Sleep for the sampling interval — use HAL_GetTick() based delay
-         * to avoid dependence on the TRON timer interrupt during bring-up.  */
-        RELTIM now = (RELTIM)HAL_GetTick();
-        if ((now - last_sample_tick) < PROFILER_INTERVAL_MS) {
-            /* Not time yet — yield so other tasks can run */
-            tk_slp_tsk(PROFILER_INTERVAL_MS - (now - last_sample_tick));
-        }
-        last_sample_tick = (RELTIM)HAL_GetTick();
+        /* Sleep for 5ms */
+        tk_dly_tsk(PROFILER_INTERVAL_MS);
 
         /* Sample the live state of all monitored tasks */
         sentinel_profiler_get_features(&current_features);
@@ -71,71 +65,34 @@ void sentinel_profiler_task_entry(INT stacd, void *exinf) {
 
 /**
  * @brief Reads live TRON task states and fills the feature vector.
- *
- * tk_ref_tsk() returns a T_RTSK struct which contains:
- *   tskstat  — TTS_RUN / TTS_RDY / TTS_WAI / TTS_SUS / TTS_DMT
- *   tskpri   — current priority
- *   wupcnt   — pending wakeup count
- *   suscnt   — suspend nesting count
- *   itskwait — internal wait factor (what it's waiting for)
- *   exinf    — extended info set at task creation
- *   texstat  — task exception status
  */
 void sentinel_profiler_get_features(SentinelFeatureVector *out) {
     if (!out) return;
     memset(out, 0, sizeof(SentinelFeatureVector));
 
     float total_load = 0.0f;
+    int task_count = 0;
 
     for (int i = 0; i < MAX_TASKS; i++) {
-        if (monitored_tasks[i] == 0) continue;   /* slot empty */
+        if (monitored_tasks[i] == 0) continue;
 
         T_RTSK rtsk;
         ER err = tk_ref_tsk(monitored_tasks[i], &rtsk);
-        if (err != E_OK) continue;               /* task may have exited */
+        if (err != E_OK) continue;
 
-        /* --- is_blocked -------------------------------------------- */
-        float blocked = ((rtsk.tskstat == TTS_WAI) ||
-                         (rtsk.tskstat == TTS_SUS) ||
-                         (rtsk.tskstat == TTS_WAS)) ? 1.0f : 0.0f;
-        out->tasks[i].is_blocked = blocked;
-
-        /* --- cpu_load (approximation) ------------------------------ */
-        /* We approximate load as the complement of blocked time.
-         * A running/ready task contributes to load; a waiting one does not.
-         * For a proper measurement you'd hook into the context-switch handler. */
-        float load = (rtsk.tskstat == TTS_RUN || rtsk.tskstat == TTS_RDY)
-                     ? (1.0f - (float)rtsk.suscnt * 0.1f)
-                     : 0.0f;
-        if (load < 0.0f) load = 0.0f;
-        if (load > 1.0f) load = 1.0f;
-        out->tasks[i].cpu_load = load;
-
-        /* --- wait_time_ms (approximation) -------------------------- */
-        /* itskwait contains bit flags for what the task is waiting on.
-         * We use wupcnt as a proxy — high wupcnt means it was woken often
-         * (low wait time); zero means it's been sleeping a while.           */
-        out->tasks[i].wait_time_ms = (rtsk.tskstat == TTS_WAI)
-                                     ? (float)(PROFILER_INTERVAL_MS)
-                                     : 0.0f;
-
-        /* --- deadline_proximity (placeholder) ---------------------- */
-        /* A real implementation would look up a per-task deadline stored
-         * in a registration table. For now we use priority inversion:
-         * tasks at priority 1 (highest) are assumed near their deadline.    */
+        out->tasks[i].is_blocked = (rtsk.tskstat & TTS_WAI) ? 1.0f : 0.0f;
+        out->tasks[i].cpu_load = 50.0f; /* TODO: placeholder */
+        out->tasks[i].wait_time_ms = 0.0f;
         out->tasks[i].deadline_proximity = (float)(8 - rtsk.tskpri) / 7.0f;
-
-        /* --- context_switch_rate (placeholder) --------------------- */
-        /* Without a kernel hook we cannot count switches directly.
-         * We set a synthetic value based on task readiness.                 */
-        out->tasks[i].context_switch_rate = (rtsk.tskstat == TTS_RDY) ? 50.0f : 10.0f;
+        out->tasks[i].context_switch_rate = 10.0f;
 
         total_load += out->tasks[i].cpu_load;
+        task_count++;
     }
 
-    /* Normalise total load to [0,1] */
-    out->total_system_cpu_load = (total_load > 1.0f) ? 1.0f : total_load;
+    if (task_count > 0) {
+        out->total_system_cpu_load = total_load / task_count;
+    } else {
+        out->total_system_cpu_load = 0.0f;
+    }
 }
-
-
-

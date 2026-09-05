@@ -1,0 +1,72 @@
+name: Sentinel-RT CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ml-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tensorflow scikit-learn matplotlib numpy
+          
+      - name: Generate training data
+        run: python model/training/generate_data.py
+        
+      - name: Train model
+        run: python model/training/train_model.py
+        
+      - name: Quantize model
+        run: python model/training/quantize_model.py
+        
+      - name: Check model size
+        run: |
+          SIZE=$(stat -c%s model/quantized/sentinel_model.tflite)
+          echo "Model size is $SIZE bytes"
+          if [ $SIZE -gt 51200 ]; then
+            echo "Model size exceeds 50KB limit"
+            exit 1
+          fi
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-artifacts
+          path: |
+            model/quantized/sentinel_model.tflite
+            docs/*.png
+
+  demo-validation:
+    needs: ml-pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ml-artifacts
+          path: .
+          
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install tensorflow colorama numpy
+        
+      - name: Run simulation demo
+        run: python demo/simulate_scheduler.py

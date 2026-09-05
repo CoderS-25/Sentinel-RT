@@ -4,6 +4,7 @@
  */
 #include "decision_engine.h"
 #include <stdio.h>
+#include "stm32n6xx_hal.h"
 
 extern ID sentinel_event_flg;
 extern SentinelDecision current_decision;
@@ -35,7 +36,7 @@ void sentinel_decision_task_entry(INT stacd, void *exinf) {
 
     while (1) {
         /* Wait on event flag from inference engine */
-        tk_wai_flg(sentinel_event_flg, 0x02, TWF_ANDW | TWF_CLR, &flgptn, TMO_FEVR);
+        tk_wai_flg(sentinel_event_flg, 0x02, TWF_ANDW | TWF_BITCLR, &flgptn, TMO_FEVR);
 
         /* Apply decisions */
         sentinel_decision_apply(&current_decision);
@@ -60,12 +61,10 @@ void sentinel_decision_apply(const SentinelDecision *decision) {
             /* Stay in Run mode (do nothing) */
             break;
         case 1:
-            /* TODO: Hardware-specific */
-            /* Call HAL_PWR_EnterSLEEPMode() equivalent */
+            HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
             break;
         case 2:
-            /* TODO: Hardware-specific */
-            /* Call HAL_PWR_EnterSTOPMode() equivalent */
+            HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
             break;
         default:
             break;

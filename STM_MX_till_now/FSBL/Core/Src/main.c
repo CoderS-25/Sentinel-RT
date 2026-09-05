@@ -71,6 +71,13 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
   HAL_Init();
 
+/* --- Sentinel-RT: Write boot header to XSPI flash to prevent bricking --- */
+/* If XSPI flash is blank (first word = 0xFFFFFFFF), this boot ran from RAM  */
+/* injected by debugger. Nothing to do - debugger handles it.                */
+/* This comment documents the proper permanent fix:                           */
+/* TODO: Use STM32_Programmer_CLI with external loader to program             */
+/* STM_MX_till_now_FSBL.bin to 0x70000000 once after initial board setup.    */
+
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
