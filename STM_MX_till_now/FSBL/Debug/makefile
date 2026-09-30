@@ -57,14 +57,15 @@ STM_MX_till_now_FSBL.bin \
 
 
 # All Target
-all: main-build
+all:
+	+@$(MAKE) --no-print-directory main-build && $(MAKE) --no-print-directory post-build
 
 # Main-build Target
 main-build: STM_MX_till_now_FSBL.elf secondary-outputs
 
 # Tool invocations
-STM_MX_till_now_FSBL.elf STM_MX_till_now_FSBL.map: $(OBJS) $(USER_OBJS) C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\FSBL\STM32N657X0HXQ_AXISRAM2_fsbl.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM_MX_till_now_FSBL.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m55 -T"C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\FSBL\STM32N657X0HXQ_AXISRAM2_fsbl.ld" --specs=nosys.specs -Wl,-Map="STM_MX_till_now_FSBL.map" -Wl,--gc-sections -static -Wl,--cmse-implib -Wl,--out-implib=./secure_nsclib.o --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM_MX_till_now_FSBL.elf STM_MX_till_now_FSBL.map: $(OBJS) $(USER_OBJS) C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\FSBL\STM32N657X0HXQ_XIP_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM_MX_till_now_FSBL.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m55 -T"C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\FSBL\STM32N657X0HXQ_XIP_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM_MX_till_now_FSBL.map" -Wl,--gc-sections -static -Wl,--cmse-implib -Wl,--out-implib=./secure_nsclib.o --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -88,6 +89,11 @@ clean:
 	-$(RM) STM_MX_till_now_FSBL.bin STM_MX_till_now_FSBL.elf STM_MX_till_now_FSBL.list STM_MX_till_now_FSBL.map default.size.stdout
 	-@echo ' '
 
+post-build:
+	cd "C:/Users/user/Documents/Sentinel-RT/STM_MX_till_now/FSBL/Debug"
+	echo y | "C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_SigningTool_CLI.exe" -bin "STM_MX_till_now_FSBL.bin" -nk -of 0x80000000 -t fsbl -o FSBL-Trusted.bin -hv 2.3 -align -dump FSBL-Trusted.bin
+	-@echo ' '
+
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
@@ -97,6 +103,6 @@ fail-specified-linker-script-missing:
 warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
-.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
+.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified post-build
 
 -include ../makefile.targets

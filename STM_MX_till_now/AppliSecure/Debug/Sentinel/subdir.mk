@@ -5,12 +5,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Sentinel/npu_init.c \
 ../Sentinel/sentinel_rt.c 
 
 OBJS += \
+./Sentinel/npu_init.o \
 ./Sentinel/sentinel_rt.o 
 
 C_DEPS += \
+./Sentinel/npu_init.d \
 ./Sentinel/sentinel_rt.d 
 
 
@@ -21,7 +24,7 @@ Sentinel/%.o Sentinel/%.su Sentinel/%.cyclo: ../Sentinel/%.c Sentinel/subdir.mk
 clean: clean-Sentinel
 
 clean-Sentinel:
-	-$(RM) ./Sentinel/sentinel_rt.cyclo ./Sentinel/sentinel_rt.d ./Sentinel/sentinel_rt.o ./Sentinel/sentinel_rt.su
+	-$(RM) ./Sentinel/npu_init.cyclo ./Sentinel/npu_init.d ./Sentinel/npu_init.o ./Sentinel/npu_init.su ./Sentinel/sentinel_rt.cyclo ./Sentinel/sentinel_rt.d ./Sentinel/sentinel_rt.o ./Sentinel/sentinel_rt.su
 
 .PHONY: clean-Sentinel
 

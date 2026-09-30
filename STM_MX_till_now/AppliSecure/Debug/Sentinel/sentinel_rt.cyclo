@@ -1,2 +1,5 @@
-../Sentinel/sentinel_rt.c:15:6:sentinel_rt_init	1
-../Sentinel/sentinel_rt.c:36:6:sentinel_rt_register_task	3
+../Sentinel/sentinel_rt.c:63:13:screen_app_task	1
+../Sentinel/sentinel_rt.c:55:13:camera_app_task	1
+../Sentinel/sentinel_rt.c:76:13:uart_transmit	1
+../Sentinel/sentinel_rt.c:38:13:led_app_task	1
+../Sentinel/sentinel_rt.c:87:4:sentinel_rt_init	6

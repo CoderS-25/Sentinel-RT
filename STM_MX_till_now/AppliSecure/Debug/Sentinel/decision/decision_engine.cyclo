@@ -1,4 +1,4 @@
-../Sentinel/decision/decision_engine.c:48:6:sentinel_decision_apply.part.0	4
-../Sentinel/decision/decision_engine.c:31:6:sentinel_decision_task_entry	1
-../Sentinel/decision/decision_engine.c:15:6:sentinel_decision_init	2
-../Sentinel/decision/decision_engine.c:48:6:sentinel_decision_apply	2
+../Sentinel/decision/decision_engine.c:47:13:debug_print	1
+../Sentinel/decision/decision_engine.c:129:13:decision_task	15
+../Sentinel/decision/decision_engine.c:227:6:sentinel_decision_register_task	2
+../Sentinel/decision/decision_engine.c:237:4:sentinel_decision_init	2

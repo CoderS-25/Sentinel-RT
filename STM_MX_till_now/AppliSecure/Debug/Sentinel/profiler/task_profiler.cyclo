@@ -1,4 +1,4 @@
-../Sentinel/profiler/task_profiler.c:84:6:sentinel_profiler_get_features.part.0	10
-../Sentinel/profiler/task_profiler.c:50:6:sentinel_profiler_task_entry	2
-../Sentinel/profiler/task_profiler.c:35:6:sentinel_profiler_init	2
-../Sentinel/profiler/task_profiler.c:84:6:sentinel_profiler_get_features	2
+../Sentinel/profiler/task_profiler.c:154:13:profiler_task	10
+../Sentinel/profiler/task_profiler.c:174:6:sentinel_profiler_register_task	2
+../Sentinel/profiler/task_profiler.c:184:4:sentinel_profiler_init	2
+../Sentinel/profiler/task_profiler.c:207:6:sentinel_profiler_get_features	1

@@ -1,0 +1,2 @@
+../Sentinel/npu_init.c:35:5:npu_hardware_init	2
+../Sentinel/npu_init.c:86:6:npu_hardware_deinit	1

@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Sentinel/inference/inference_engine.c 
+../Sentinel/inference/inference_engine.c \
+../Sentinel/inference/model_data.c 
 
 OBJS += \
-./Sentinel/inference/inference_engine.o 
+./Sentinel/inference/inference_engine.o \
+./Sentinel/inference/model_data.o 
 
 C_DEPS += \
-./Sentinel/inference/inference_engine.d 
+./Sentinel/inference/inference_engine.d \
+./Sentinel/inference/model_data.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Sentinel/inference/%.o Sentinel/inference/%.su Sentinel/inference/%.cyclo: ../Se
 clean: clean-Sentinel-2f-inference
 
 clean-Sentinel-2f-inference:
-	-$(RM) ./Sentinel/inference/inference_engine.cyclo ./Sentinel/inference/inference_engine.d ./Sentinel/inference/inference_engine.o ./Sentinel/inference/inference_engine.su
+	-$(RM) ./Sentinel/inference/inference_engine.cyclo ./Sentinel/inference/inference_engine.d ./Sentinel/inference/inference_engine.o ./Sentinel/inference/inference_engine.su ./Sentinel/inference/model_data.cyclo ./Sentinel/inference/model_data.d ./Sentinel/inference/model_data.o ./Sentinel/inference/model_data.su
 
 .PHONY: clean-Sentinel-2f-inference
 

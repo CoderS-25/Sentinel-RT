@@ -99,10 +99,11 @@ int main(void)
    */
   #define APPLI_SECURE_BASE_ADDRESS  0x34000000UL
 
-  __disable_irq();
-
+  /* Check if AppliSecure is loaded in SRAM at 0x34000000 */
   uint32_t app_sp    = *(volatile uint32_t *)(APPLI_SECURE_BASE_ADDRESS + 0x00);
   uint32_t app_reset = *(volatile uint32_t *)(APPLI_SECURE_BASE_ADDRESS + 0x04);
+
+  __disable_irq();
 
   SCB->VTOR = APPLI_SECURE_BASE_ADDRESS;
   __set_MSP(app_sp);

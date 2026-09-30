@@ -1,0 +1,2 @@
+﻿#Opt	Id	Name	Type	IP	Offset	File	Mac
+-	0x01	FSBL	Binary	XSPI1	0x0	STM_MX_till_now_FSBL_XIP.bin	

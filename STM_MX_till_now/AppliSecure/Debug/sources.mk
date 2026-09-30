@@ -65,7 +65,7 @@ Middlewares/uTKernel/sysdepend/stm32_cube/lib/libtk/cpu/stm32n6 \
 Middlewares/uTKernel/sysdepend/stm32_cube/lib/libtk \
 Sentinel/decision \
 Sentinel/inference \
-Sentinel/profiler \
 Sentinel \
+Sentinel/profiler \
 X-CUBE-AI/App \
 

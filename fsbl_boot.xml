@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Provisioning>
+    <Data>
+        <Device>STM32N6</Device>
+        <Type>FSBL</Type>
+        <InputFile>C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\FSBL\Debug\STM_MX_till_now_FSBL_XIP.bin</InputFile>
+        <InputAddress>0x70000000</InputAddress>
+        <BinaryType>0x00</BinaryType>
+        <BinaryVersion>0x00000000</BinaryVersion>
+        <ExtMemAddress>0x70000000</ExtMemAddress>
+        <OutputFile>C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\FSBL\Debug\STM_MX_till_now_FSBL_BOOT.bin</OutputFile>
+    </Data>
+</Provisioning>

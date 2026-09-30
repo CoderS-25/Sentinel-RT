@@ -101,7 +101,22 @@ int main(void)
   HAL_UART_Transmit(&huart3, (uint8_t*)"2. System Isolation Done\r\n", 26, 100);
   
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&huart3, (uint8_t*)"3. About to start RTOS\r\n", 24, 100);
+  HAL_UART_Transmit(&huart3, (uint8_t*)"3. Starting Hardware LED Test...\r\n", 34, 100);
+
+  /* --- HARDWARE SANITY CHECK: BLINK GREEN LED --- */
+  /* 1. Enable the clock for GPIO Port O */
+  __HAL_RCC_GPIOO_CLK_ENABLE();
+
+  /* 2. Configure Port O, Pin 1 as an Output */
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;   // Push-Pull output
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOO, &GPIO_InitStruct);
+
+  /* 3. Hardware blink test removed! We are booting the RTOS now. */
+  /* ---------------------------------------------- */
   
   knl_start_mtkernel();  /* Hand off control to the TRON Kernel */
   
