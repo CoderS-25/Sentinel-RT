@@ -22,7 +22,9 @@
  */
 
 #define	CNF_SYSTEMAREA_TOP	0	/* 0: Use system default address */
+#ifndef CNF_SYSTEMAREA_END
 #define CNF_SYSTEMAREA_END	0	/* 0: Use system default address */
+#endif
 
 #define	CNF_MAX_TSKPRI		32	/* Task Max priority */
 
