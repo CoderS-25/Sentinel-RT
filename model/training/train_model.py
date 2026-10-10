@@ -30,7 +30,7 @@ tf.random.set_seed(42)
 np.random.seed(42)
 
 def train_model():
-    dataset_path = r"C:\Users\user\Documents\Sentinel-RT\model\dataset\task_scenarios.csv"
+    dataset_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'task_scenarios.csv')
     if not os.path.exists(dataset_path):
         print(f"Error: Dataset not found at {dataset_path}")
         return
@@ -61,7 +61,7 @@ def train_model():
     X_test_scaled = scaler.transform(X_test)
     
     # Ensure docs directory exists for saving plots
-    docs_dir = r"C:\Users\user\Documents\Sentinel-RT\docs"
+    docs_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'docs')
     os.makedirs(docs_dir, exist_ok=True)
     
     # 4. Build Model
@@ -167,7 +167,7 @@ def train_model():
     print(f"Saved confusion matrix to {cm_plot_path}")
     
     # 7. Save Model
-    model_dir = r"C:\Users\user\Documents\Sentinel-RT\model\training"
+    model_dir = os.path.dirname(__file__)
     os.makedirs(model_dir, exist_ok=True)
     model_path = os.path.join(model_dir, "sentinel_model.keras")
     model.save(model_path)

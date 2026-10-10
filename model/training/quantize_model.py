@@ -19,8 +19,8 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 
 def quantize_model():
-    model_path = r"C:\Users\user\Documents\Sentinel-RT\model\training\sentinel_model.keras"
-    dataset_path = r"C:\Users\user\Documents\Sentinel-RT\model\dataset\task_scenarios.csv"
+    model_path = os.path.join(os.path.dirname(__file__), 'sentinel_model.keras')
+    dataset_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'task_scenarios.csv')
     
     if not os.path.exists(model_path):
         print(f"Error: Model not found at {model_path}")
@@ -70,7 +70,7 @@ def quantize_model():
     tflite_quant_model = converter.convert()
     
     # Save the quantized model
-    quantized_dir = r"C:\Users\user\Documents\Sentinel-RT\model\quantized"
+    quantized_dir = os.path.join(os.path.dirname(__file__), '..', 'quantized')
     os.makedirs(quantized_dir, exist_ok=True)
     tflite_path = os.path.join(quantized_dir, "sentinel_model.tflite")
     

@@ -114,7 +114,7 @@ if __name__ == '__main__':
     dataset = generate_data(10000, 5)
     
     # Ensure directory exists
-    output_dir = r"C:\Users\user\Documents\Sentinel-RT\model\dataset"
+    output_dir = os.path.join(os.path.dirname(__file__), '..', 'dataset')
     os.makedirs(output_dir, exist_ok=True)
     
     output_path = os.path.join(output_dir, "task_scenarios.csv")

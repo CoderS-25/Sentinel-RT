@@ -1,4 +1,4 @@
-﻿"""
+"""
 Sentinel-RT PC Simulator
 ========================
 Demonstrates the AI scheduler making real decisions using the trained
@@ -31,7 +31,7 @@ try:
 except ImportError:
     G = Y = R = RESET = ""
 
-MODEL_PATH = r"C:\Users\user\Documents\Sentinel-RT\model\quantized\sentinel_model.tflite"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'model', 'quantized', 'sentinel_model.tflite')
 POWER_LABELS = ["Active", "LightSleep", "DeepSleep"]
 POWER_COLORS = [G, Y, R]
 
