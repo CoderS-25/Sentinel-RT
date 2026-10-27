@@ -15,7 +15,10 @@ STM_MX_till_now/**/Debug/**/*.elf
 !STM_MX_till_now/FSBL/Debug/STM_MX_till_now_FSBL.elf
 !STM_MX_till_now/FSBL/Debug/STM_MX_till_now_FSBL.bin
 !STM_MX_till_now/AppliSecure/Debug/STM_MX_till_now_AppliSecure.elf
+!STM_MX_till_now/AppliSecure/Debug/STM_MX_till_now_AppliSecure.bin
+!STM_MX_till_now/AppliSecure/Debug/secure_nsclib.o
 !STM_MX_till_now/AppliNonSecure/Debug/STM_MX_till_now_AppliNonSecure.elf
+!STM_MX_till_now/AppliNonSecure/Debug/STM_MX_till_now_AppliNonSecure.bin
 
 # Python artifacts
 __pycache__/
