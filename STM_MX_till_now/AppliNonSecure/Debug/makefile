@@ -63,11 +63,11 @@ all: main-build
 main-build: STM_MX_till_now_AppliNonSecure.elf secondary-outputs
 
 dependents:
-	-cd C:/Users/user/Documents/Sentinel-RT/STM_MX_till_now/AppliSecure/Debug && $(MAKE) clean all
+	-cd ../../AppliSecure/Debug && $(MAKE) clean all
 
 # Tool invocations
-STM_MX_till_now_AppliNonSecure.elf STM_MX_till_now_AppliNonSecure.map: $(OBJS) $(USER_OBJS) C:/Users/user/Documents/Sentinel-RT/STM_MX_till_now/AppliSecure/Debug/STM_MX_till_now_AppliSecure.elf C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\AppliNonSecure\STM32N657X0HXQ_LRUN.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM_MX_till_now_AppliNonSecure.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m55 -T"C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\AppliNonSecure\STM32N657X0HXQ_LRUN.ld" --specs=nosys.specs -Wl,-Map="STM_MX_till_now_AppliNonSecure.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM_MX_till_now_AppliNonSecure.elf STM_MX_till_now_AppliNonSecure.map: $(OBJS) $(USER_OBJS) ../../AppliSecure/Debug/STM_MX_till_now_AppliSecure.elf ..\STM32N657X0HXQ_LRUN.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM_MX_till_now_AppliNonSecure.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m55 -T"..\STM32N657X0HXQ_LRUN.ld" --specs=nosys.specs -Wl,-Map="STM_MX_till_now_AppliNonSecure.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group ../../AppliSecure/Debug/secure_nsclib.o
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -101,6 +101,6 @@ warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
 .PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
-C:/Users/user/Documents/Sentinel-RT/STM_MX_till_now/AppliSecure/Debug/STM_MX_till_now_AppliSecure.elf:
+../../AppliSecure/Debug/STM_MX_till_now_AppliSecure.elf:
 
 -include ../makefile.targets

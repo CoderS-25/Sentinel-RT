@@ -105,8 +105,8 @@ all: main-build
 main-build: STM_MX_till_now_AppliSecure.elf secondary-outputs
 
 # Tool invocations
-STM_MX_till_now_AppliSecure.elf STM_MX_till_now_AppliSecure.map: $(OBJS) $(USER_OBJS) C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\AppliSecure\STM32N657X0HXQ_LRUN_s.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM_MX_till_now_AppliSecure.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m55 -T"C:\Users\user\Documents\Sentinel-RT\STM_MX_till_now\AppliSecure\STM32N657X0HXQ_LRUN_s.ld" --specs=nosys.specs -Wl,-Map="STM_MX_till_now_AppliSecure.map" -Wl,--gc-sections -static -Wl,--cmse-implib -Wl,--out-implib=./secure_nsclib.o -L../../Middlewares/ST/AI/Lib --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM_MX_till_now_AppliSecure.elf STM_MX_till_now_AppliSecure.map: $(OBJS) $(USER_OBJS) ..\STM32N657X0HXQ_LRUN_s.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM_MX_till_now_AppliSecure.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m55 -T"..\STM32N657X0HXQ_LRUN_s.ld" --specs=nosys.specs -Wl,-Map="STM_MX_till_now_AppliSecure.map" -Wl,--gc-sections -static -Wl,--cmse-implib -Wl,--out-implib=./secure_nsclib.o -L../../Middlewares/ST/AI/Lib --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
